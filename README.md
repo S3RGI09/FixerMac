@@ -1,4 +1,4 @@
-# FixerMac - Script Bash
+# FixerMac - Instrucciones
 
 Este script, **FixerMac**, realiza un chequeo y reparación de errores en sistemas macOS, abordando problemas relacionados con el sistema de archivos, extensiones del kernel y permisos. Además, te permite reiniciar el equipo tras las reparaciones.
 
