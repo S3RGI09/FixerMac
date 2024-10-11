@@ -7,22 +7,92 @@ if [ "$EUID" -ne 0 ]; then
     exit
 fi
 
+function crear_reporte {
+    echo "Creando reporte de errores..."
+    echo "# Reporte de Errores - $(date)" > reporte.md
+    echo "$1" >> reporte.md
+    echo "El reporte ha sido creado en 'reporte.md'."
+}
+
 function verificar_errores {
     echo "Verificando errores del sistema de archivos..."
-    diskutil verifyVolume /
+    if ! diskutil verifyVolume / > /dev/null; then
+        echo "Error: Sistema de archivos corrupto."
+        crear_reporte "Error en la verificación del sistema de archivos."
+    fi
+
     echo "Comprobando kernel..."
-    sudo kextstat | grep -v com.apple
+    if kextstat | grep -v com.apple > /dev/null; then
+        echo "Se encontraron extensiones de kernel no oficiales."
+        crear_reporte "Se encontraron extensiones de kernel no oficiales."
+    fi
+
     echo "Verificando sistema de archivos con fsck..."
-    sudo fsck -fy /
+    if ! fsck -fy / > /dev/null; then
+        echo "Error: fsck no pudo reparar el sistema de archivos."
+        crear_reporte "Error en la verificación con fsck."
+    fi
+
+    echo "Verificando espacio en disco..."
+    diskutil info / | grep "Free Space" | while read -r line; do
+        free_space=$(echo $line | awk '{print $3}')
+        if [ $free_space -lt 10000000 ]; then
+            echo "Error: Poco espacio en disco."
+            crear_reporte "Error: Espacio en disco insuficiente ($free_space bytes)."
+        fi
+    done
+
+    echo "Verificando logs del sistema..."
+    if log show --predicate 'eventMessage contains "error"' --info --last 1h | grep -q "error"; then
+        echo "Se encontraron errores en los logs del sistema."
+        crear_reporte "Errores encontrados en los logs del sistema."
+    fi
+
+    echo "Verificando actualizaciones pendientes..."
+    if softwareupdate -l | grep -q "No new software available."; then
+        echo "No hay actualizaciones pendientes."
+    else
+        echo "Existen actualizaciones pendientes."
+        crear_reporte "Actualizaciones pendientes detectadas."
+    fi
+
+    echo "Verificando red y DNS..."
+    if ! ping -c 1 8.8.8.8 > /dev/null; then
+        echo "Error de conectividad de red."
+        crear_reporte "Error: No se pudo hacer ping a 8.8.8.8 (problema de red/DNS)."
+    fi
 }
 
 function corregir_errores {
     echo "Corrigiendo permisos y errores del sistema de archivos..."
-    sudo diskutil repairVolume /
+    if ! diskutil repairVolume / > /dev/null; then
+        echo "Error al reparar el sistema de archivos."
+        crear_reporte "Error al intentar reparar el sistema de archivos."
+    fi
+
     echo "Reconstruyendo caché del kernel..."
-    sudo kextcache -i /
+    if ! kextcache -i / > /dev/null; then
+        echo "Error al reconstruir la caché del kernel."
+        crear_reporte "Error al reconstruir la caché del kernel."
+    fi
+
     echo "Verificando sistema de archivos con fsck..."
-    sudo fsck -fy /
+    if ! fsck -fy / > /dev/null; then
+        echo "Error: fsck no pudo reparar el sistema de archivos."
+        crear_reporte "Error en la corrección con fsck."
+    fi
+
+    echo "Corrigiendo permisos del sistema..."
+    if ! diskutil repairPermissions / > /dev/null; then
+        echo "Error: No se pudieron reparar los permisos."
+        crear_reporte "Error en la corrección de permisos del sistema."
+    fi
+
+    echo "Limpiando caché del sistema..."
+    if ! sudo rm -rf /Library/Caches/* /System/Library/Caches/* /var/folders/* > /dev/null; then
+        echo "Error: No se pudo limpiar la caché del sistema."
+        crear_reporte "Error al intentar limpiar la caché del sistema."
+    fi
 }
 
 echo "Iniciando chequeo del sistema..."
@@ -43,4 +113,8 @@ if [[ "$respuesta" == "s" ]]; then
     fi
 else
     echo "No se realizaron correcciones."
+fi
+
+if [ -f reporte.md ]; then
+    echo "Se ha generado un reporte de errores: 'reporte.md'. Revisa el archivo para más detalles."
 fi
