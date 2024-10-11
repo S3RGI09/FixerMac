@@ -29,7 +29,7 @@
 
 4. **Opciones:**
    - El script te preguntará si deseas corregir los errores encontrados. Responde `s` para proceder con las correcciones o `n` para finalizar.
-   - Después de las correcciones, se te dará la opción de reiniciar el sistema.
+   - Después de las correcciones, se te dará la opción de reiniciar el sistema. Necesario para aplicar las correcciones.
 
 ## Reporte de Errores
 
