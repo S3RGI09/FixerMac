@@ -21,10 +21,29 @@ function verificar_errores {
         crear_reporte "Error en la verificación del sistema de archivos."
     fi
 
-    echo "Comprobando kernel..."
+    echo "Comprobando extensiones de kernel..."
     if kextstat | grep -v com.apple > /dev/null; then
-        echo "Se encontraron extensiones de kernel no oficiales."
-        crear_reporte "Se encontraron extensiones de kernel no oficiales."
+        echo "Se encontraron extensiones de kernel no oficiales. Verificando su estado..."
+        kextstat | grep -v com.apple | while read -r kext; do
+            if ! kextstat | grep -q "$kext"; then
+                echo "Error: El kext $kext no se está cargando correctamente."
+                crear_reporte "Error: El kext $kext no se está cargando correctamente."
+            fi
+        done
+    else
+        echo "No se encontraron extensiones de kernel no oficiales."
+    fi
+
+    echo "Verificando problemas en los drivers..."
+    if ! kextstat | grep -q "com.apple"; then
+        echo "Error: No se encontraron drivers oficiales en el kernel."
+        crear_reporte "Error: No se encontraron drivers oficiales en el kernel."
+    else
+        driver_errors=$(log show --predicate 'eventMessage contains "kext"' --info --last 1h | grep -i "error")
+        if [[ -n "$driver_errors" ]]; then
+            echo "Se encontraron problemas con los drivers: $driver_errors"
+            crear_reporte "Se encontraron problemas con los drivers: $driver_errors"
+        fi
     fi
 
     echo "Verificando sistema de archivos con fsck..."
