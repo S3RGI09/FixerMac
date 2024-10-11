@@ -20,10 +20,12 @@
 3. **El script realizará las siguientes verificaciones:**
    - Verificación del sistema de archivos (diskutil y fsck).
    - Extensiones de kernel no oficiales.
+   - Extensiones de kernel no funcionando
    - Espacio en disco disponible.
    - Errores en los logs del sistema.
    - Actualizaciones del sistema pendientes.
    - Estado de la red y conectividad.
+   - Drivers no funcionando
 
 4. **Opciones:**
    - El script te preguntará si deseas corregir los errores encontrados. Responde `s` para proceder con las correcciones o `n` para finalizar.
