@@ -35,6 +35,14 @@
 
 Si el script encuentra errores que no puede corregir automáticamente, se generará un archivo llamado `reporte.md` en el que se detallarán los errores encontrados y las acciones recomendadas.
 
+## Seguridad
+El script en si mismo es seguro y esta diseñado para fines éticos, es necesario solicitar permisos de superusuario, ya que sin estos el script no puede corregir los errores, de todos modos, puedes verificar tu mismo el codigo y verificar que no contiene comportamientos potencialmente destructivos, y por el contrario, usa acciones controladas y claras con la interacción del usuario.
+
+**Potencial de riesgo:** 3/10 (Bajo)
+- Uso de permisos elevados (necesarios)
+- Posible daño indirecto (improbable)
+- Errores por parte del usuario
+
 ## Contribuciones
 
 Si deseas contribuir a este proyecto, por favor crea un fork del repositorio y envía un pull request con tus mejoras o correcciones.
