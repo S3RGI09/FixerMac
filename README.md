@@ -1,32 +1,40 @@
-# FixerMac - Instrucciones
+# FixerMac
 
-Este script, **FixerMac**, realiza un chequeo y reparación de errores en sistemas macOS, abordando problemas relacionados con el sistema de archivos, extensiones del kernel y permisos. Además, te permite reiniciar el equipo tras las reparaciones.
-
-## Características
-
-- **Chequeo de errores**: Escanea el sistema de archivos, verifica extensiones del kernel y detecta problemas de permisos.
-- **Corrección automática**: Corrige errores detectados en el sistema de archivos y reconstruye la caché del kernel si es necesario.
-- **Reinicio opcional**: Te permite reiniciar el equipo después de realizar las reparaciones.
+**FixerMac** es un script de bash diseñado para diagnosticar y corregir problemas comunes en macOS, incluyendo el sistema de archivos, el kernel, permisos, actualizaciones pendientes y errores de red. Además, genera un reporte (`reporte.md`) cuando encuentra errores que no puede corregir automáticamente.
 
 ## Requisitos
 
-- **macOS**: El script está diseñado para funcionar en sistemas macOS.
-- **Permisos de superusuario (root)**: Se debe ejecutar con permisos de administrador.
+- macOS.
+- Permisos de superusuario (sudo).
 
-## Instalación y uso
+## Uso
 
-1. Descargar el script y guardarlo como `FixerMac.sh`.
-2. Otorgar permisos de ejecución con el comando:
-   `chmod +x FixerMac.sh`
-3. Ejecutar el script con permisos de superusuario usando:
-   `sudo ./FixerMac.sh`
+1. **Clona el repositorio o descarga el script.**
+   
+2. **Ejecuta el script con permisos de superusuario:**
 
-## Funcionamiento
+   `sudo ./fixermac.sh`
 
-1. El script comienza con un chequeo del sistema de archivos, extensiones del kernel y permisos.
-2. Pregunta si deseas reparar los errores encontrados.
-3. Si decides proceder, corrige los errores automáticamente y ofrece la opción de reiniciar el equipo.
+3. **El script realizará las siguientes verificaciones:**
+   - Verificación del sistema de archivos (diskutil y fsck).
+   - Extensiones de kernel no oficiales.
+   - Espacio en disco disponible.
+   - Errores en los logs del sistema.
+   - Actualizaciones del sistema pendientes.
+   - Estado de la red y conectividad.
+
+4. **Opciones:**
+   - El script te preguntará si deseas corregir los errores encontrados. Responde `s` para proceder con las correcciones o `n` para finalizar.
+   - Después de las correcciones, se te dará la opción de reiniciar el sistema.
+
+## Reporte de Errores
+
+Si el script encuentra errores que no puede corregir automáticamente, se generará un archivo llamado `reporte.md` en el que se detallarán los errores encontrados y las acciones recomendadas.
+
+## Contribuciones
+
+Si deseas contribuir a este proyecto, por favor crea un fork del repositorio y envía un pull request con tus mejoras o correcciones.
 
 ## Licencia
 
-FixerMac está licenciado bajo la licencia MIT.
+Este proyecto está bajo la licencia MIT. Para más detalles, revisa el archivo `LICENSE`.
