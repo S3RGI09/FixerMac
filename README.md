@@ -12,8 +12,10 @@
 1. **Clona el repositorio o descarga el script.**
    
 2. **Ejecuta el script con permisos de superusuario:**
-
-   `sudo ./fixermac.sh`
+   ```
+   chmod +x fixermac.sh
+   sudo ./fixermac.sh
+   ```
 
 3. **El script realizará las siguientes verificaciones:**
    - Verificación del sistema de archivos (diskutil y fsck).
