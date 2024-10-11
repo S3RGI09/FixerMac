@@ -15,6 +15,8 @@ function crear_reporte {
 }
 
 function verificar_errores {
+    echo "Iniciando verificación del sistema..."
+
     echo "Verificando errores del sistema de archivos..."
     if ! diskutil verifyVolume / > /dev/null; then
         echo "Error: Sistema de archivos corrupto."
@@ -53,13 +55,11 @@ function verificar_errores {
     fi
 
     echo "Verificando espacio en disco..."
-    diskutil info / | grep "Free Space" | while read -r line; do
-        free_space=$(echo $line | awk '{print $3}')
-        if [ $free_space -lt 10000000 ]; then
-            echo "Error: Poco espacio en disco."
-            crear_reporte "Error: Espacio en disco insuficiente ($free_space bytes)."
-        fi
-    done
+    free_space=$(diskutil info / | grep "Free Space" | awk '{print $3}')
+    if [ "$free_space" -lt 100000000 ]; then
+        echo "Error: Poco espacio en disco."
+        crear_reporte "Error: Espacio en disco insuficiente ($free_space bytes)."
+    fi
 
     echo "Verificando logs del sistema..."
     if log show --predicate 'eventMessage contains "error"' --info --last 1h | grep -q "error"; then
@@ -108,13 +108,19 @@ function corregir_errores {
     fi
 
     echo "Limpiando caché del sistema..."
-    if ! sudo rm -rf /Library/Caches/* /System/Library/Caches/* /var/folders/* > /dev/null; then
-        echo "Error: No se pudo limpiar la caché del sistema."
-        crear_reporte "Error al intentar limpiar la caché del sistema."
+    read -p "¿Deseas limpiar la caché del sistema? (s/n): " confirmar
+    if [[ "$confirmar" == "s" ]]; then
+        if ! sudo rm -rf /Library/Caches/* /System/Library/Caches/* /var/folders/* > /dev/null; then
+            echo "Error: No se pudo limpiar la caché del sistema."
+            crear_reporte "Error al intentar limpiar la caché del sistema."
+        else
+            echo "Caché del sistema limpiada con éxito."
+        fi
+    else
+        echo "Limpieza de caché cancelada."
     fi
 }
 
-echo "Iniciando chequeo del sistema..."
 verificar_errores
 
 read -p "¿Deseas corregir los errores encontrados? (s/n): " respuesta
