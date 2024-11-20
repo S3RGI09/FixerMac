@@ -1,4 +1,4 @@
-# FixerMac <img src="[https://upload.wikimedia.org/wikipedia/commons/c/c9/Finder_Icon_macOS_Big_Sur.png](mac)" alt="macOS Image" width="50" height="50"/>
+# FixerMac <img src="https://www.projectwizards.net/media/pages/blog/2020/01/macos-03-version/912d5199b9-1731076114/macos.png" alt="macOS Image" width="40" height="40"/>
 
 **FixerMac** es un script de bash diseñado para diagnosticar y corregir problemas comunes en macOS, incluyendo el sistema de archivos, el kernel, permisos, actualizaciones pendientes y errores de red. Además, genera un reporte (`reporte.md`) cuando encuentra errores que no puede corregir automáticamente.
 
