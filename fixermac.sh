@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo "-FixerMac- | By S3RGI09 (Mejorado por Seguridad)"
+echo "-FixerMac- | By S3RGI09"
+echo "v3.2 estable"
 
 if [ "$EUID" -ne 0 ]; then 
     echo "Por favor, ejecuta este script con permisos de superusuario (sudo)."
