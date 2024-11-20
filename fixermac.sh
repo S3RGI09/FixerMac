@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "-FixerMac- | By S3RGI09"
+echo "-FixerMac- | By S3RGI09 (Mejorado por Seguridad)"
 
 if [ "$EUID" -ne 0 ]; then 
     echo "Por favor, ejecuta este script con permisos de superusuario (sudo)."
-    exit
+    exit 1
 fi
 
 function crear_reporte {
@@ -16,7 +16,7 @@ function crear_reporte {
 
 function verificar_errores {
     echo "Iniciando verificación del sistema..."
-
+    
     echo "Verificando errores del sistema de archivos..."
     if ! diskutil verifyVolume / > /dev/null; then
         echo "Error: Sistema de archivos corrupto."
@@ -36,106 +36,75 @@ function verificar_errores {
         echo "No se encontraron extensiones de kernel no oficiales."
     fi
 
-    echo "Verificando problemas en los drivers..."
-    if ! kextstat | grep -q "com.apple"; then
-        echo "Error: No se encontraron drivers oficiales en el kernel."
-        crear_reporte "Error: No se encontraron drivers oficiales en el kernel."
-    else
-        driver_errors=$(log show --predicate 'eventMessage contains "kext"' --info --last 1h | grep -i "error")
-        if [[ -n "$driver_errors" ]]; then
-            echo "Se encontraron problemas con los drivers: $driver_errors"
-            crear_reporte "Se encontraron problemas con los drivers: $driver_errors"
-        fi
-    fi
-
-    echo "Verificando sistema de archivos con fsck..."
-    if ! fsck -fy / > /dev/null; then
-        echo "Error: fsck no pudo reparar el sistema de archivos."
-        crear_reporte "Error en la verificación con fsck."
-    fi
-
-    echo "Verificando espacio en disco..."
-    free_space=$(diskutil info / | grep "Free Space" | awk '{print $3}')
-    if [ "$free_space" -lt 100000000 ]; then
-        echo "Error: Poco espacio en disco."
-        crear_reporte "Error: Espacio en disco insuficiente ($free_space bytes)."
-    fi
-
     echo "Verificando logs del sistema..."
     if log show --predicate 'eventMessage contains "error"' --info --last 1h | grep -q "error"; then
         echo "Se encontraron errores en los logs del sistema."
         crear_reporte "Errores encontrados en los logs del sistema."
     fi
 
-    echo "Verificando actualizaciones pendientes..."
-    if softwareupdate -l | grep -q "No new software available."; then
-        echo "No hay actualizaciones pendientes."
-    else
-        echo "Existen actualizaciones pendientes."
-        crear_reporte "Actualizaciones pendientes detectadas."
-    fi
-
-    echo "Verificando red y DNS..."
-    if ! ping -c 1 8.8.8.8 > /dev/null; then
-        echo "Error de conectividad de red."
-        crear_reporte "Error: No se pudo hacer ping a 8.8.8.8 (problema de red/DNS)."
+    echo "Verificando espacio en disco..."
+    free_space=$(diskutil info / | grep "Free Space" | awk '{print $3}' | tr -d '()')
+    if [[ "$free_space" =~ ^[0-9]+$ ]] && [ "$free_space" -lt 100000000 ]; then
+        echo "Error: Poco espacio en disco."
+        crear_reporte "Error: Espacio en disco insuficiente ($free_space bytes)."
     fi
 }
 
 function corregir_errores {
-    echo "Corrigiendo permisos y errores del sistema de archivos..."
-    if ! diskutil repairVolume / > /dev/null; then
-        echo "Error al reparar el sistema de archivos."
-        crear_reporte "Error al intentar reparar el sistema de archivos."
-    fi
-
-    echo "Reconstruyendo caché del kernel..."
-    if ! kextcache -i / > /dev/null; then
-        echo "Error al reconstruir la caché del kernel."
-        crear_reporte "Error al reconstruir la caché del kernel."
-    fi
-
-    echo "Verificando sistema de archivos con fsck..."
-    if ! fsck -fy / > /dev/null; then
-        echo "Error: fsck no pudo reparar el sistema de archivos."
-        crear_reporte "Error en la corrección con fsck."
-    fi
-
-    echo "Corrigiendo permisos del sistema..."
-    if ! diskutil repairPermissions / > /dev/null; then
-        echo "Error: No se pudieron reparar los permisos."
-        crear_reporte "Error en la corrección de permisos del sistema."
-    fi
-
-    echo "Limpiando caché del sistema..."
-    read -p "¿Deseas limpiar la caché del sistema? (s/n): " confirmar
-    if [[ "$confirmar" == "s" ]]; then
-        if ! sudo rm -rf /Library/Caches/* /System/Library/Caches/* /var/folders/* > /dev/null; then
-            echo "Error: No se pudo limpiar la caché del sistema."
-            crear_reporte "Error al intentar limpiar la caché del sistema."
+    echo "Corrigiendo errores detectados..."
+    
+    echo "1. Reparación del sistema de archivos con 'diskutil repairVolume'."
+    read -p "¿Deseas continuar con esta operación? (s/n): " confirmar_diskutil
+    if [[ "$confirmar_diskutil" == "s" ]]; then
+        if ! diskutil repairVolume / > /dev/null; then
+            echo "Error: No se pudo reparar el sistema de archivos."
+            crear_reporte "Error al intentar reparar el sistema de archivos."
         else
-            echo "Caché del sistema limpiada con éxito."
+            echo "Sistema de archivos reparado con éxito."
         fi
     else
-        echo "Limpieza de caché cancelada."
+        echo "Reparación del sistema de archivos omitida."
+    fi
+
+    echo "2. Reconstrucción de la caché del kernel con 'kextcache'."
+    read -p "¿Deseas continuar con esta operación? (s/n): " confirmar_kextcache
+    if [[ "$confirmar_kextcache" == "s" ]]; then
+        if ! kextcache -i / > /dev/null; then
+            echo "Error: No se pudo reconstruir la caché del kernel."
+            crear_reporte "Error al reconstruir la caché del kernel."
+        else
+            echo "Caché del kernel reconstruida con éxito."
+        fi
+    else
+        echo "Reconstrucción de caché del kernel omitida."
+    fi
+
+    echo "3. Limpieza de la caché del sistema."
+    read -p "¿Deseas limpiar la caché del sistema? (s/n): " confirmar_cache
+    if [[ "$confirmar_cache" == "s" ]]; then
+        echo "ADVERTENCIA: Esta acción eliminará archivos temporales que podrían causar problemas si están en uso."
+        read -p "¿Estás seguro de querer continuar? (s/n): " doble_confirmar_cache
+        if [[ "$doble_confirmar_cache" == "s" ]]; then
+            if ! sudo rm -rf /Library/Caches/* /System/Library/Caches/* /var/folders/* > /dev/null; then
+                echo "Error: No se pudo limpiar la caché del sistema."
+                crear_reporte "Error al intentar limpiar la caché del sistema."
+            else
+                echo "Caché del sistema limpiada con éxito."
+            fi
+        else
+            echo "Limpieza de caché cancelada."
+        fi
+    else
+        echo "Limpieza de caché omitida."
     fi
 }
 
 verificar_errores
 
-read -p "¿Deseas corregir los errores encontrados? (s/n): " respuesta
-
-if [[ "$respuesta" == "s" ]]; then
+read -p "¿Deseas intentar corregir los errores detectados? (s/n): " corregir
+if [[ "$corregir" == "s" ]]; then
     corregir_errores
-    echo "Errores corregidos."
-    
-    read -p "¿Quieres reiniciar el sistema ahora? (s/n): " reiniciar
-    if [[ "$reiniciar" == "s" ]]; then
-        echo "Reiniciando el sistema..."
-        sudo reboot
-    else
-        echo "Reinicio cancelado."
-    fi
+    echo "Proceso de corrección finalizado."
 else
     echo "No se realizaron correcciones."
 fi
