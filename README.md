@@ -47,6 +47,11 @@ El script en si mismo es seguro y esta diseñado para fines éticos, es necesari
 
 Si deseas contribuir a este proyecto, por favor crea un fork del repositorio y envía un pull request con tus mejoras o correcciones.
 
+## Enlaces
+- [https://github.com/apple/darwin-xnu](Repositorio de Darwin, Kernel de MacOS)
+- [https://support.apple.com/es-lamr/guide/mac-help/mchlp2890/mac](Soporte de Apple para errores de Kernel Panic)
+- [https://support.apple.com/es-es/mac](Soporte de Apple para Mac)
+
 ## Licencia
 
 Este proyecto está bajo la licencia MIT. Para más detalles, revisa el archivo `LICENSE`.
