@@ -26,6 +26,7 @@
    - Actualizaciones del sistema pendientes.
    - Estado de la red y conectividad.
    - Drivers no funcionando
+   - Fecha y hora correcta
 
 4. **Opciones:**
    - El script te preguntará si deseas corregir los errores encontrados. Responde `s` para proceder con las correcciones o `n` para finalizar.
@@ -43,6 +44,32 @@ El script en si mismo es seguro y esta diseñado para fines éticos, es necesari
 - Posible daño indirecto (improbable)
 - Errores por parte del usuario
 
+## Problemas comunes
+**Si no puedes acceder a webs HTTPS**, puede ser porque el certificado TLS está caducado o no es reconocido. Para solucionar esto, sigue estos pasos:
+
+1. **Verifica la autoridad del certificado**:
+   - Revisa si el problema es que la autoridad de certificación (CA) de la que se desconfía es **Let's Encrypt**.
+
+2. **Descarga el certificado más reciente**:
+   - Ve a [este enlace](https://letsencrypt.org/certs/isrgrootx1.txt) y copia todo el contenido del certificado.
+
+3. **Crea un archivo con el certificado**:
+   - Abre la **Terminal** y navega a tu directorio preferido.
+   - Ejecuta el comando `nano cert.pem` para crear un archivo de texto llamado `cert.pem`.
+   - Pega el contenido copiado del certificado y guarda el archivo presionando `Ctrl + X`, luego `Y` para confirmar y `Enter`.
+
+4. **Instala el certificado en Keychain Access**:
+   - Abre **Finder** y localiza el archivo `cert.pem`.
+   - Haz doble clic en el archivo para abrirlo en **Keychain Access**.
+   - Introduce tu contraseña para autorizar la instalación.
+   - Asegúrate de seleccionar el llavero **"Sistema"** y marca la opción de **"Confiar"** para permitir que el sistema confíe en este certificado.
+
+5. **Verifica la instalación**:
+   - Comprueba que el certificado se haya instalado correctamente y que el navegador o sistema reconozca el certificado como válido.
+
+6. **(Opcional) Borra certificados caducados**:
+   - Si lo prefieres, puedes eliminar certificados caducados de **Keychain Access** para mantener el sistema limpio.
+
 ## Contribuciones
 
 Si deseas contribuir a este proyecto, por favor crea un fork del repositorio y envía un pull request con tus mejoras o correcciones.
@@ -51,6 +78,7 @@ Si deseas contribuir a este proyecto, por favor crea un fork del repositorio y e
 - [Repositorio de Darwin, Kernel de MacOS](https://github.com/apple/darwin-xnu)
 - [Soporte de Apple para errores de Kernel Panic](https://support.apple.com/es-lamr/guide/mac-help/mchlp2890/mac)
 - [Soporte de Apple para Mac](https://support.apple.com/es-es/mac)
+- [Utilizar Diagnóstico Apple](https://support.apple.com/es-es/102550)
 
 ## Licencia
 
