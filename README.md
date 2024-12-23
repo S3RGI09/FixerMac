@@ -46,27 +46,21 @@ If the script finds errors that it cannot automatically correct, a file called `
 >[!note]
 >Common problems
 >**If you cannot access HTTPS websites**, it may be because the TLS certificate is expired or not recognized.  To fix this, follow these steps:
-
 >1. **Check the certificate authority**:
 - Check if the problem is that the untrusted certificate authority (CA) is **Let's Encrypt**.
-
 >2. **Download the latest certificate**:
 >- Go to [this link](https://letsencrypt.org/certs/isrgrootx1.txt) and copy the entire contents of the certificate.
-
 >3. **Create a file with the certificate**:
 >- Open **Terminal** and navigate to your preferred directory.
 >- Run the command `nano cert.pem` to create a text file called `cert.pem`.
 >- Paste the copied contents of the certificate and save the file by pressing `Ctrl + X`, then `Y` to confirm and `Enter`.
-
 >4. **Install the certificate in Keychain Access**:
 >- Open **Finder** and locate the `cert.pem` file.
 >- Double-click the file to open it in **Keychain Access**.
 >- Enter your password to authorize the installation.
 >- Make sure you select the **"System"** keychain and check the **"Trust"** option to allow the system to trust this certificate.
-
 >5. **Verify the installation**:
 >- Check that the certificate has been installed correctly and that the browser or system recognizes the certificate as valid.
-
 >6. **(Optional) Delete expired certificates**:
 >- If you prefer, you can remove expired certificates from **Keychain Access** to keep the system clean.
 
