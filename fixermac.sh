@@ -7,136 +7,136 @@ BLUE='\033[0;34m'
 RESET='\033[0m'
 
 echo -e "${BLUE}-FixerMac- | By S3RGI09${RESET}"
-echo -e "${GREEN}v3.3 estable${RESET}"
+echo -e "${GREEN}v3.3 stable${RESET}"
 
 if [ "$EUID" -ne 0 ]; then 
-    echo -e "${RED}Por favor, ejecuta este script con permisos de superusuario (sudo).${RESET}"
+    echo -e "${RED}Please run this script with superuser permissions (sudo).${RESET}"
     exit 1
 fi
 
-function crear_reporte {
-    echo -e "${ORANGE}Creando reporte de errores...${RESET}"
-    echo "# Reporte de Errores - $(date)" > reporte.md
-    echo "$1" >> reporte.md
-    echo -e "${GREEN}El reporte ha sido creado en 'reporte.md'.${RESET}"
+function create_report {
+    echo -e "${ORANGE}Creating error report...${RESET}"
+    echo "# Error Report - $(date)" > report.md
+    echo "$1" >> report.md
+    echo -e "${GREEN}The report has been created in 'report.md'.${RESET}"
 }
 
-function verificar_errores {
-    echo -e "${ORANGE}Iniciando verificación del sistema...${RESET}"
+function check_errors {
+    echo -e "${ORANGE}Starting system check...${RESET}"
     
-    echo -e "${ORANGE}Verificando errores del sistema de archivos...${RESET}"
+    echo -e "${ORANGE}Checking file system errors...${RESET}"
     if ! diskutil verifyVolume / > /dev/null; then
-        echo -e "${RED}Error: Sistema de archivos corrupto.${RESET}"
-        crear_reporte "Error en la verificación del sistema de archivos."
+        echo -e "${RED}Error: Corrupt file system.${RESET}"
+        create_report "Error in file system verification."
     fi
 
-    echo -e "${ORANGE}Comprobando extensiones de kernel...${RESET}"
+    echo -e "${ORANGE}Checking kernel extensions...${RESET}"
     if kextstat | grep -v com.apple > /dev/null; then
-        echo -e "${ORANGE}Se encontraron extensiones de kernel no oficiales. Verificando su estado...${RESET}"
+        echo -e "${ORANGE}Found unofficial kernel extensions. Checking their status...${RESET}"
         kextstat | grep -v com.apple | while read -r kext; do
             if ! kextstat | grep -q "$kext"; then
-                echo -e "${RED}Error: El kext $kext no se está cargando correctamente.${RESET}"
-                crear_reporte "Error: El kext $kext no se está cargando correctamente."
+                echo -e "${RED}Error: The kext $kext is not loading correctly.${RESET}"
+                create_report "Error: The kext $kext is not loading correctly."
             fi
         done
     else
-        echo -e "${GREEN}No se encontraron extensiones de kernel no oficiales.${RESET}"
+        echo -e "${GREEN}No unofficial kernel extensions found.${RESET}"
     fi
 
-    echo -e "${ORANGE}Verificando logs del sistema...${RESET}"
+    echo -e "${ORANGE}Checking system logs...${RESET}"
     if log show --predicate 'eventMessage contains "error"' --info --last 1h | grep -q "error"; then
-        echo -e "${RED}Se encontraron errores en los logs del sistema.${RESET}"
-        crear_reporte "Errores encontrados en los logs del sistema."
+        echo -e "${RED}Found errors in the system logs.${RESET}"
+        create_report "Errors found in system logs."
     fi
 
-    echo -e "${ORANGE}Verificando espacio en disco...${RESET}"
+    echo -e "${ORANGE}Checking disk space...${RESET}"
     free_space=$(diskutil info / | grep "Free Space" | awk '{print $3}' | tr -d '()')
     if [[ "$free_space" =~ ^[0-9]+$ ]] && [ "$free_space" -lt 100000000 ]; then
-        echo -e "${RED}Error: Poco espacio en disco.${RESET}"
-        crear_reporte "Error: Espacio en disco insuficiente ($free_space bytes)."
+        echo -e "${RED}Error: Low disk space.${RESET}"
+        create_report "Error: Insufficient disk space ($free_space bytes)."
     fi
 
-    echo -e "${ORANGE}Verificando la hora del sistema...${RESET}"
+    echo -e "${ORANGE}Checking system time...${RESET}"
     system_time=$(date +%s)
     ntp_time=$(date -u +%s -d @$(curl -s --head http://time.apple.com | grep -i ^date: | sed 's/Date: //'))
 
     if [ "$system_time" -ne "$ntp_time" ]; then
-        echo -e "${RED}Error: La hora del sistema está desajustada.${RESET}"
-        crear_reporte "Error: La hora del sistema está desajustada."
+        echo -e "${RED}Error: System time is incorrect.${RESET}"
+        create_report "Error: System time is incorrect."
     else
-        echo -e "${GREEN}La hora del sistema está correcta.${RESET}"
+        echo -e "${GREEN}System time is correct.${RESET}"
     fi
 }
 
-function corregir_errores {
-    echo -e "${ORANGE}Corrigiendo errores detectados...${RESET}"
+function fix_errors {
+    echo -e "${ORANGE}Fixing detected errors...${RESET}"
     
-    echo -e "${ORANGE}1. Reparación del sistema de archivos con 'diskutil repairVolume'.${RESET}"
-    read -p "¿Deseas continuar con esta operación? (s/n): " confirmar_diskutil
-    if [[ "$confirmar_diskutil" == "s" ]]; then
+    echo -e "${ORANGE}1. Repairing the file system with 'diskutil repairVolume'.${RESET}"
+    read -p "Do you want to continue with this operation? (y/n): " confirm_diskutil
+    if [[ "$confirm_diskutil" == "y" ]]; then
         if ! diskutil repairVolume / > /dev/null; then
-            echo -e "${RED}Error: No se pudo reparar el sistema de archivos.${RESET}"
-            crear_reporte "Error al intentar reparar el sistema de archivos."
+            echo -e "${RED}Error: Could not repair the file system.${RESET}"
+            create_report "Error while attempting to repair the file system."
         else
-            echo -e "${GREEN}Sistema de archivos reparado con éxito.${RESET}"
+            echo -e "${GREEN}File system successfully repaired.${RESET}"
         fi
     else
-        echo -e "${ORANGE}Reparación del sistema de archivos omitida.${RESET}"
+        echo -e "${ORANGE}File system repair skipped.${RESET}"
     fi
 
-    echo -e "${ORANGE}2. Reconstrucción de la caché del kernel con 'kextcache'.${RESET}"
-    read -p "¿Deseas continuar con esta operación? (s/n): " confirmar_kextcache
-    if [[ "$confirmar_kextcache" == "s" ]]; then
+    echo -e "${ORANGE}2. Rebuilding the kernel cache with 'kextcache'.${RESET}"
+    read -p "Do you want to continue with this operation? (y/n): " confirm_kextcache
+    if [[ "$confirm_kextcache" == "y" ]]; then
         if ! kextcache -i / > /dev/null; then
-            echo -e "${RED}Error: No se pudo reconstruir la caché del kernel.${RESET}"
-            crear_reporte "Error al reconstruir la caché del kernel."
+            echo -e "${RED}Error: Could not rebuild the kernel cache.${RESET}"
+            create_report "Error while rebuilding the kernel cache."
         else
-            echo -e "${GREEN}Caché del kernel reconstruida con éxito.${RESET}"
+            echo -e "${GREEN}Kernel cache successfully rebuilt.${RESET}"
         fi
     else
-        echo -e "${ORANGE}Reconstrucción de caché del kernel omitida.${RESET}"
+        echo -e "${ORANGE}Kernel cache rebuild skipped.${RESET}"
     fi
 
-    echo -e "${ORANGE}3. Limpieza de la caché del sistema.${RESET}"
-    read -p "¿Deseas limpiar la caché del sistema? (s/n): " confirmar_cache
-    if [[ "$confirmar_cache" == "s" ]]; then
-        echo -e "${YELLOW}ADVERTENCIA: Esta acción eliminará archivos temporales que podrían causar problemas si están en uso.${RESET}"
-        read -p "¿Estás seguro de querer continuar? (s/n): " doble_confirmar_cache
-        if [[ "$doble_confirmar_cache" == "s" ]]; then
+    echo -e "${ORANGE}3. Clearing the system cache.${RESET}"
+    read -p "Do you want to clear the system cache? (y/n): " confirm_cache
+    if [[ "$confirm_cache" == "y" ]]; then
+        echo -e "${YELLOW}WARNING: This action will delete temporary files that could cause issues if in use.${RESET}"
+        read -p "Are you sure you want to continue? (y/n): " double_confirm_cache
+        if [[ "$double_confirm_cache" == "y" ]]; then
             if ! sudo rm -rf /Library/Caches/* /System/Library/Caches/* /var/folders/* > /dev/null; then
-                echo -e "${RED}Error: No se pudo limpiar la caché del sistema.${RESET}"
-                crear_reporte "Error al intentar limpiar la caché del sistema."
+                echo -e "${RED}Error: Could not clear the system cache.${RESET}"
+                create_report "Error while attempting to clear the system cache."
             else
-                echo -e "${GREEN}Caché del sistema limpiada con éxito.${RESET}"
+                echo -e "${GREEN}System cache cleared successfully.${RESET}"
             fi
         else
-            echo -e "${ORANGE}Limpieza de caché cancelada.${RESET}"
+            echo -e "${ORANGE}Cache clearing canceled.${RESET}"
         fi
     else
-        echo -e "${ORANGE}Limpieza de caché omitida.${RESET}"
+        echo -e "${ORANGE}Cache clearing skipped.${RESET}"
     fi
 
-    echo -e "${ORANGE}4. Ajuste de la hora del sistema con NTP.${RESET}"
-    read -p "¿Deseas ajustar la hora del sistema? (s/n): " confirmar_ajuste_hora
-    if [[ "$confirmar_ajuste_hora" == "s" ]]; then
+    echo -e "${ORANGE}4. Adjusting the system time with NTP.${RESET}"
+    read -p "Do you want to adjust the system time? (y/n): " confirm_time_adjustment
+    if [[ "$confirm_time_adjustment" == "y" ]]; then
         sudo systemsetup -setnetworktimeserver time.apple.com
         sudo systemsetup -setusingnetworktime on
-        echo -e "${GREEN}Hora del sistema ajustada correctamente.${RESET}"
+        echo -e "${GREEN}System time successfully adjusted.${RESET}"
     else
-        echo -e "${ORANGE}Ajuste de hora omitido.${RESET}"
+        echo -e "${ORANGE}Time adjustment skipped.${RESET}"
     fi
 }
 
-verificar_errores
+check_errors
 
-read -p "¿Deseas intentar corregir los errores detectados? (s/n): " corregir
-if [[ "$corregir" == "s" ]]; then
-    corregir_errores
-    echo -e "${GREEN}Proceso de corrección finalizado.${RESET}"
+read -p "Do you want to attempt to fix the detected errors? (y/n): " fix
+if [[ "$fix" == "y" ]]; then
+    fix_errors
+    echo -e "${GREEN}Correction process completed.${RESET}"
 else
-    echo -e "${ORANGE}No se realizaron correcciones.${RESET}"
+    echo -e "${ORANGE}No corrections made.${RESET}"
 fi
 
-if [ -f reporte.md ]; then
-    echo -e "${GREEN}Se ha generado un reporte de errores: 'reporte.md'. Revisa el archivo para más detalles.${RESET}"
+if [ -f report.md ]; then
+    echo -e "${GREEN}An error report has been generated: 'report.md'. Check the file for more details.${RESET}"
 fi
