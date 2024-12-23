@@ -47,7 +47,7 @@ If the script finds errors that it cannot automatically correct, a file called `
 >Common problems
 >**If you cannot access HTTPS websites**, it may be because the TLS certificate is expired or not recognized.  To fix this, follow these steps:
 >1. **Check the certificate authority**:
-- Check if the problem is that the untrusted certificate authority (CA) is **Let's Encrypt**.
+>- Check if the problem is that the untrusted certificate authority (CA) is **Let's Encrypt**.
 >2. **Download the latest certificate**:
 >- Go to [this link](https://letsencrypt.org/certs/isrgrootx1.txt) and copy the entire contents of the certificate.
 >3. **Create a file with the certificate**:
