@@ -1,4 +1,4 @@
-# [FixerMac](https://raw.githubusercontent.com/S3RGI09/imagenes/refs/heads/main/pixelcut-export%20(2).png?token=GHSAT0AAAAAAC34LOKA66C7KYY3MRKD3LGYZ3JYL4Q)
+# ![FixerMac](https://raw.githubusercontent.com/S3RGI09/imagenes/refs/heads/main/pixelcut-export%20(2).png?token=GHSAT0AAAAAAC34LOKA66C7KYY3MRKD3LGYZ3JYL4Q)
 
 **FixerMac** is a bash script designed to diagnose and fix common macOS issues, including file system, kernel, permissions, pending updates, and network errors. It also generates a report (`report.md`) when it finds errors that it cannot fix automatically.
 
