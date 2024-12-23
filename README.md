@@ -1,85 +1,84 @@
 # FixerMac <img src="https://www.projectwizards.net/media/pages/blog/2020/01/macos-03-version/912d5199b9-1731076114/macos.png" alt="macOS Image" width="50" height="50"/>
 
-**FixerMac** es un script de bash diseñado para diagnosticar y corregir problemas comunes en macOS, incluyendo el sistema de archivos, el kernel, permisos, actualizaciones pendientes y errores de red. Además, genera un reporte (`reporte.md`) cuando encuentra errores que no puede corregir automáticamente.
+**FixerMac** is a bash script designed to diagnose and fix common macOS issues, including file system, kernel, permissions, pending updates, and network errors. It also generates a report (`report.md`) when it finds errors that it cannot fix automatically.
 
-## Requisitos
+## Requirements
 
 - macOS.
-- Permisos de superusuario (sudo).
+- Superuser permissions (sudo).
 
-## Uso
+ ## Usage
 
-1. **Clona el repositorio o descarga el script.**
-   
-2. **Ejecuta el script con permisos de superusuario:**
-   ```
-   chmod +x fixermac.sh
-   sudo ./fixermac.sh
-   ```
+1. **Clone the repository or download the script.**
 
-3. **El script realizará las siguientes verificaciones:**
-   - Verificación del sistema de archivos (diskutil y fsck).
-   - Extensiones de kernel no oficiales.
-   - Extensiones de kernel no funcionando
-   - Espacio en disco disponible.
-   - Errores en los logs del sistema.
-   - Actualizaciones del sistema pendientes.
-   - Estado de la red y conectividad.
-   - Drivers no funcionando
-   - Fecha y hora correcta
+2. **Run the script with superuser permissions:**
+```
+chmod +x fixermac.sh
+sudo ./fixermac.sh
+```
 
-4. **Opciones:**
-   - El script te preguntará si deseas corregir los errores encontrados. Responde `s` para proceder con las correcciones o `n` para finalizar.
-   - Después de las correcciones, se te dará la opción de reiniciar el sistema. Necesario para aplicar las correcciones.
+3. **The script will perform the following checks:**
+- File system check (diskutil and fsck).
+- Unofficial kernel extensions.
+- Non-working kernel extensions
+- Available disk space.
+- Errors in system logs.
+- Pending system updates.
+- Network status and connectivity.
+- Non-working drivers
+- Correct date and time
 
-## Reporte de Errores
+4. **Options:**
+- The script will ask you if you want to fix the errors found. Answer `y` to proceed with the fixes or `n` to finish.
+- After the fixes, you will be given the option to reboot the system. Required to apply the fixes.
 
-Si el script encuentra errores que no puede corregir automáticamente, se generará un archivo llamado `reporte.md` en el que se detallarán los errores encontrados y las acciones recomendadas.
+ ## Error Reporting
+
+If the script finds errors that it cannot automatically correct, a file called `report.md` will be generated detailing the errors found and recommended actions.
 
 >[!warning]
->El script en si mismo es seguro y esta diseñado para fines éticos, es necesario solicitar permisos de superusuario, ya que sin estos el script no puede corregir los errores, de todos modos, puedes verificar tu mismo el codigo y verificar que no contiene comportamientos potencialmente destructivos, y por el contrario, usa acciones controladas y claras con la interacción del usuario.
+>The script itself is safe and designed for ethical purposes, it is necessary to request superuser permissions, since without them the script cannot correct errors, however, you can check the code yourself and verify that it does not contain potentially destructive behaviors, and on the contrary, it uses controlled and clear actions with user interaction.
+>**Risk potential:** 3/10 (Low)
+>- Use of elevated permissions (necessary)
+>- Possible indirect damage (unlikely)
+>- Errors by the user
 
-**Potencial de riesgo:** 3/10 (Bajo)
-- Uso de permisos elevados (necesarios)
-- Posible daño indirecto (improbable)
-- Errores por parte del usuario
+## Common problems
+**If you cannot access HTTPS websites**, it may be because the TLS certificate is expired or not recognized.  To fix this, follow these steps:
 
-## Problemas comunes
-**Si no puedes acceder a webs HTTPS**, puede ser porque el certificado TLS está caducado o no es reconocido. Para solucionar esto, sigue estos pasos:
+1. **Check the certificate authority**:
+- Check if the problem is that the untrusted certificate authority (CA) is **Let's Encrypt**.
 
-1. **Verifica la autoridad del certificado**:
-   - Revisa si el problema es que la autoridad de certificación (CA) de la que se desconfía es **Let's Encrypt**.
+2. **Download the latest certificate**:
+- Go to [this link](https://letsencrypt.org/certs/isrgrootx1.txt) and copy the entire contents of the certificate.
 
-2. **Descarga el certificado más reciente**:
-   - Ve a [este enlace](https://letsencrypt.org/certs/isrgrootx1.txt) y copia todo el contenido del certificado.
+3. **Create a file with the certificate**:
+- Open **Terminal** and navigate to your preferred directory.
+- Run the command `nano cert.pem` to create a text file called `cert.pem`.
+- Paste the copied contents of the certificate and save the file by pressing `Ctrl + X`, then `Y` to confirm and `Enter`.
 
-3. **Crea un archivo con el certificado**:
-   - Abre la **Terminal** y navega a tu directorio preferido.
-   - Ejecuta el comando `nano cert.pem` para crear un archivo de texto llamado `cert.pem`.
-   - Pega el contenido copiado del certificado y guarda el archivo presionando `Ctrl + X`, luego `Y` para confirmar y `Enter`.
+4. **Install the certificate in Keychain Access**:
+- Open **Finder** and locate the `cert.pem` file.
+ - Double-click the file to open it in **Keychain Access**.
+- Enter your password to authorize the installation.
+- Make sure you select the **"System"** keychain and check the **"Trust"** option to allow the system to trust this certificate.
 
-4. **Instala el certificado en Keychain Access**:
-   - Abre **Finder** y localiza el archivo `cert.pem`.
-   - Haz doble clic en el archivo para abrirlo en **Keychain Access**.
-   - Introduce tu contraseña para autorizar la instalación.
-   - Asegúrate de seleccionar el llavero **"Sistema"** y marca la opción de **"Confiar"** para permitir que el sistema confíe en este certificado.
+5. **Verify the installation**:
+- Check that the certificate has been installed correctly and that the browser or system recognizes the certificate as valid.
 
-5. **Verifica la instalación**:
-   - Comprueba que el certificado se haya instalado correctamente y que el navegador o sistema reconozca el certificado como válido.
+6. **(Optional) Delete expired certificates**:
+- If you prefer, you can remove expired certificates from **Keychain Access** to keep the system clean.
 
-6. **(Opcional) Borra certificados caducados**:
-   - Si lo prefieres, puedes eliminar certificados caducados de **Keychain Access** para mantener el sistema limpio.
+## Contributions
 
-## Contribuciones
+If you would like to contribute to this project, please create a fork of the repository and submit a pull request with your improvements or fixes.
 
-Si deseas contribuir a este proyecto, por favor crea un fork del repositorio y envía un pull request con tus mejoras o correcciones.
+ ## Links
+- [Darwin Repository, MacOS Kernel](https://github.com/apple/darwin-xnu)
+- [Apple Support for Kernel Panic Bugs](https://support.apple.com/en-lamr/guide/mac-help/mchlp2890/mac)
+- [Apple Support for Mac](https://support.apple.com/en-us/mac)
+- [Using Apple Diagnostics](https://support.apple.com/en-us/102550)
 
-## Enlaces
-- [Repositorio de Darwin, Kernel de MacOS](https://github.com/apple/darwin-xnu)
-- [Soporte de Apple para errores de Kernel Panic](https://support.apple.com/es-lamr/guide/mac-help/mchlp2890/mac)
-- [Soporte de Apple para Mac](https://support.apple.com/es-es/mac)
-- [Utilizar Diagnóstico Apple](https://support.apple.com/es-es/102550)
+## License
 
-## Licencia
-
-Este proyecto está bajo la licencia MIT. Para más detalles, revisa el archivo `LICENSE`.
+This project is licensed under the MIT License. For more details, see the `LICENSE` file.
