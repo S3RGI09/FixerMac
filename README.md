@@ -1,5 +1,6 @@
-![Versión](https://img.shields.io/badge/versión-3.3-blue)
-![Licencia](https://img.shields.io/badge/licencia-MIT-green)
+![Versión](https://img.shields.io/badge/version-3.3-blue)
+![by](https://img.shields.io/badge/by-S3RGI09-red)
+![Licencia](https://img.shields.io/badge/license-MIT-green)
 # ![FixerMac](https://github.com/user-attachments/assets/400a29cd-722a-477c-b937-4070a62e4e45)
 
 **FixerMac** is a bash script designed to diagnose and fix common macOS issues, including file system, kernel, permissions, pending updates, and network errors. It also generates a report (`report.md`) when it finds errors that it cannot fix automatically.
