@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-stable3.3-green) 
+![Version](https://img.shields.io/badge/version-STABLEv3.3-green) 
 ![by](https://img.shields.io/badge/by-S3RGI09-blue) 
 ![License](https://img.shields.io/badge/license-MIT-red)
 # ![FixerMac](https://github.com/user-attachments/assets/400a29cd-722a-477c-b937-4070a62e4e45)
